@@ -10,11 +10,9 @@ function migrateLegacyXp(client) {
 
   const legacy = store.readJson(legacyXpFile, {});
   const entries = Object.entries(legacy).filter(([, u]) => u && typeof u === 'object');
-  if (entries.length === 0) {
-    store.meta.legacyMigrated = true;
-    store.saveMeta();
-    return;
-  }
+  // Empty file: nothing to import yet. Don't mark it done, so an old
+  // xp.json copied in later still gets imported on the next start.
+  if (entries.length === 0) return;
 
   // Old data wasn't per-server, so it needs exactly one target server.
   const guildId = process.env.GUILD_ID || (client.guilds.cache.size === 1 ? client.guilds.cache.first().id : null);
