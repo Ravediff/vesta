@@ -1,16 +1,22 @@
 # Vesta
 
-A Discord bot for levels, leaderboards, welcome cards and moderation, with a pixel-art look.
+A Discord bot for levels, leaderboards, welcome cards, self-roles, announcements and moderation, with a retro pixel-art look.
 
 ## Features
 
-- **Levels and XP**: members earn XP for chatting (10–20 XP, at most once every 30 seconds). Each server has its own levels.
-- **Rank cards**: `/rank` draws a pixel-style card with the member's level, rank and a progress bar.
+- **Levels and XP**: members earn XP for chatting (10–20 XP, at most once every 30 seconds) and for hanging out in voice (5–10 XP a minute). Each server has its own levels.
+- **Voice XP**: only counts when at least 2 people in the channel aren't deafened, and never in the AFK channel, so it can't be farmed by idling. Turn it off with `/config voicexp`.
+- **Pixel-art cards**: welcome, goodbye, rank and level-up cards drawn with a built-in pixel font, so they look the same on any host.
+- **Rank cards**: `/rank` shows level, rank, an XP bar, messages sent, voice time, total XP and the next level reward.
+- **Level-up cards**: posted when someone levels up, showing any role they unlocked.
 - **Leaderboards**: all-time, weekly and monthly, with page buttons. Weekly totals reset every Sunday and monthly totals on the 1st. A reset still happens if the bot was offline at midnight.
 - **Level roles**: roles given out automatically when members reach a level.
 - **Welcome and goodbye cards**: pixel-style image cards in the channels you choose.
 - **Auto-role**: a role every new member gets. If the server has rules screening, it's given after they accept the rules.
 - **Moderation**: warn, timeout, kick, ban, unban and purge. Vesta checks role order, DMs the member when it can, and logs each action to a mod-log channel.
+- **Join and leave log**: every join and leave goes to the mod log with account age. Accounts under 7 days old are flagged, since they're often alts or spam.
+- **Self-role panels**: `/selfroles` posts buttons that members click to add or remove roles. Panels can be "pick one" (for example age groups), keep working after restarts, and refuse roles with mod or admin permissions.
+- **Announcements**: `/announce` opens a popup to write a formatted announcement, with an optional role ping, colour and image.
 - **Safe by default**: the bot never pings anyone except a new member in their welcome message.
 
 ## Commands
@@ -31,7 +37,9 @@ A Discord bot for levels, leaderboards, welcome cards and moderation, with a pix
 | `/ban user [reason] [delete_messages]` | Ban Members | Bans a user, even one who isn't in the server |
 | `/unban user_id` | Ban Members | Unbans a user, with autocomplete for banned users |
 | `/purge amount [user]` | Manage Messages | Bulk-deletes up to 100 recent messages |
-| `/config ...` | Manage Server | Sets channels, auto-role and level roles |
+| `/config ...` | Manage Server | Sets channels, auto-role, level roles and voice XP |
+| `/selfroles title role1 [role2…role10] [pick_one]` | Manage Roles | Posts a self-role button panel |
+| `/announce [channel] [ping] [color] [image]` | Manage Server | Writes and posts an announcement |
 | `/xp add/remove/reset` | Manage Server | Adjusts a member's XP |
 
 Server admins can change who can use each command under **Server Settings → Integrations → Vesta**.
@@ -66,7 +74,7 @@ npm start
 
 ### Discord Developer Portal settings
 
-Under **Bot → Privileged Gateway Intents**, turn on **Server Members Intent**. Vesta needs it for welcome and goodbye cards and the auto-role. It doesn't need Message Content Intent.
+Under **Bot → Privileged Gateway Intents**, turn on **Server Members Intent**. Vesta needs it for welcome and goodbye cards and the auto-role. It doesn't need Message Content Intent. Voice XP uses the voice-states intent, which isn't privileged and needs no setting.
 
 The bot's role needs these permissions: View Channels, Send Messages, Embed Links, Attach Files, Read Message History, Manage Messages, Manage Roles, Moderate Members, Kick Members and Ban Members.
 

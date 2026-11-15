@@ -17,12 +17,7 @@ module.exports = {
     if (member.user.bot) return replyError(interaction, 'Bots don’t earn XP.');
 
     await interaction.deferReply();
-    const { total } = levels.getUser(interaction.guild.id, member.id);
-    const image = await rankCard(member, {
-      ...levels.progress(total),
-      total,
-      rank: levels.rankOf(interaction.guild.id, member.id)
-    });
+    const image = await rankCard(member, levels.stats(interaction.guild, member.id));
 
     return interaction.editReply({ files: [new AttachmentBuilder(image, { name: 'rank.png' })] });
   }

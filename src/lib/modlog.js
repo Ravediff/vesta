@@ -41,6 +41,18 @@ async function modLog(guild, { action, target, moderator, reason, extra }) {
   }
 }
 
+// Posts any embed to the mod-log channel, if one is set (join/leave log etc.).
+async function logEmbed(guild, embed) {
+  const channelId = store.guild(guild.id).config.modLogChannel;
+  const channel = channelId && guild.channels.cache.get(channelId);
+  if (!channel) return;
+  try {
+    await channel.send({ embeds: [embed], allowedMentions: { parse: [] } });
+  } catch (err) {
+    log.warn(`Could not post to mod log in ${guild.name}: ${err.message}`);
+  }
+}
+
 // Checks role hierarchy before a moderator acts on a member. Returns an error string or null.
 function checkHierarchy(interaction, target, action) {
   const { guild, member: moderator } = interaction;
@@ -72,4 +84,4 @@ async function notify(user, guild, text) {
   }
 }
 
-module.exports = { modLog, checkHierarchy, notify };
+module.exports = { modLog, logEmbed, checkHierarchy, notify };

@@ -25,6 +25,9 @@ module.exports = {
   xp: {
     cooldownMs: 30_000, // one XP award per user per 30 seconds
     min: 10,
-    max: 20
+    max: 20,
+    // Per minute in voice (see lib/voice.js for the anti-AFK rules)
+    voiceMin: 5,
+    voiceMax: 10
   }
 };

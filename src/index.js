@@ -15,7 +15,8 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMembers
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildVoiceStates // voice XP
   ],
   partials: [Partials.GuildMember],
   // Safe default: bot messages never ping anyone unless a message opts in.

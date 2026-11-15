@@ -34,6 +34,7 @@ function defaultGuild() {
       leaveChannel: null,
       levelUpChannel: null, // null = same channel the message was sent in
       levelUpEnabled: true,
+      voiceXp: true,
       modLogChannel: null,
       autoRole: null,
       levelRoles: {} // { "5": "roleId" }

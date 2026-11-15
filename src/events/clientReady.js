@@ -3,6 +3,7 @@ const log = require('../lib/logger');
 const { registerCommands } = require('../lib/commands');
 const { checkResets } = require('../lib/resets');
 const { migrateLegacyXp } = require('../lib/migrate');
+const { startVoiceXp } = require('../lib/voice');
 
 module.exports = {
   name: Events.ClientReady,
@@ -16,5 +17,6 @@ module.exports = {
     migrateLegacyXp(client);
     checkResets();
     setInterval(checkResets, 60_000);
+    startVoiceXp(client);
   }
 };

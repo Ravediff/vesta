@@ -17,8 +17,35 @@ function progress(total) {
 
 function getUser(guildId, userId) {
   const data = store.guild(guildId);
-  if (!data.users[userId]) data.users[userId] = { total: 0, weekly: 0, monthly: 0 };
-  return data.users[userId];
+  const user = (data.users[userId] ??= { total: 0, weekly: 0, monthly: 0 });
+  // Stats added in v2.1; older entries start counting from now.
+  user.messages ??= 0;
+  user.voiceMinutes ??= 0;
+  return user;
+}
+
+// Everything the rank card shows for one member.
+function stats(guild, userId) {
+  const user = getUser(guild.id, userId);
+  const { level, xp, needed } = progress(user.total);
+  return {
+    level, xp, needed,
+    total: user.total,
+    messages: user.messages,
+    voiceMinutes: user.voiceMinutes,
+    rank: rankOf(guild.id, userId),
+    nextReward: nextReward(guild, level)
+  };
+}
+
+// The next level-reward role above `level`, if any: { level, name }.
+function nextReward(guild, level) {
+  const { levelRoles } = store.guild(guild.id).config;
+  const next = Object.entries(levelRoles)
+    .map(([lvl, roleId]) => ({ level: Number(lvl), role: guild.roles.cache.get(roleId) }))
+    .filter(r => r.level > level && r.role)
+    .sort((a, b) => a.level - b.level)[0];
+  return next ? { level: next.level, name: next.role.name } : null;
 }
 
 // Adds (or removes, if negative) XP. Returns { before, after } levels.
@@ -77,4 +104,6 @@ async function syncLevelRoles(member) {
   }
 }
 
-module.exports = { neededFor, progress, getUser, addXp, setTotal, leaderboard, rankOf, syncLevelRoles };
+module.exports = {
+  neededFor, progress, getUser, stats, nextReward, addXp, setTotal, leaderboard, rankOf, syncLevelRoles
+};

@@ -22,17 +22,7 @@ function canPost(channel) {
   return channel.permissionsFor(channel.guild.members.me).has(POST_PERMS);
 }
 
-// Everything the bot needs to manage a role: permission + role above it.
-function roleProblem(guild, role) {
-  const me = guild.members.me;
-  if (role.managed) return `${role} is managed by an integration and can’t be given out.`;
-  if (role.id === guild.id) return 'You can’t use @everyone.';
-  if (!me.permissions.has(PermissionFlagsBits.ManageRoles)) return 'I need the **Manage Roles** permission.';
-  if (role.position >= me.roles.highest.position) {
-    return `${role} is above my highest role. Move my role higher in Server Settings → Roles.`;
-  }
-  return null;
-}
+const { roleProblem } = require('../lib/roles');
 
 const show = id => (id ? `<#${id}>` : '*off*');
 
@@ -60,6 +50,10 @@ module.exports = {
       s.setName('levelup').setDescription('Where level-up messages go')
         .addBooleanOption(o => o.setName('enabled').setDescription('Send level-up messages at all').setRequired(true))
         .addChannelOption(channelOption('Fixed channel (leave empty = the channel they leveled up in)'))
+    )
+    .addSubcommand(s =>
+      s.setName('voicexp').setDescription('Turn XP for time spent in voice channels on or off')
+        .addBooleanOption(o => o.setName('enabled').setDescription('Earn XP in voice').setRequired(true))
     )
     .addSubcommand(s =>
       s.setName('autorole').setDescription('Role given to every new member (leave empty to turn off)')
@@ -136,6 +130,13 @@ module.exports = {
         return reply(`Level-up messages will be sent ${channel ? `in ${channel}` : 'in the channel where people level up'}.`);
       }
 
+      case 'voicexp':
+        cfg.voiceXp = interaction.options.getBoolean('enabled');
+        save();
+        return reply(cfg.voiceXp
+          ? 'Members now earn XP in voice channels (2+ people, not deafened, not in AFK).'
+          : 'Voice XP turned off.');
+
       case 'autorole': {
         const role = interaction.options.getRole('role');
         if (role) {
@@ -169,6 +170,7 @@ module.exports = {
               inline: true
             },
             { name: 'Auto-role', value: cfg.autoRole ? `<@&${cfg.autoRole}>` : '*off*', inline: true },
+            { name: 'Voice XP', value: cfg.voiceXp === false ? '*off*' : 'On', inline: true },
             { name: 'Level roles', value: levelRoles || '*none*' }
           );
         return interaction.reply({ embeds: [embed], allowedMentions: { parse: [] } });
